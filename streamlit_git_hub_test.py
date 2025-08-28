@@ -1,5 +1,5 @@
 
-%%writefile app.py
+# %%writefile app.py
 
 import streamlit as st
 import pandas as pd
@@ -66,4 +66,5 @@ if button_download:
 
 
 # Отображение результатов в DataFrame
+
 st.dataframe(results_df)
