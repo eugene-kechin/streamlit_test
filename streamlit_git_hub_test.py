@@ -11,7 +11,7 @@ def calculate_third_number(numbers):
 
 st.set_page_config(layout="wide")
 
-st.title("Калькулятор для вычисления суммы двух положительных чисел")
+st.title("Калькулятор для вычисления суммы двух чисел")
 
 
 def main():
@@ -34,5 +34,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
