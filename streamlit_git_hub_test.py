@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import io
-from openpyxl import Workbook
+
 
 
 @st.cache_data
@@ -29,21 +29,10 @@ def main():
     results_df = pd.DataFrame(np.column_stack([numbers, res_num]), index=[f"Наблюдение {i + 1}" for i in range(int(how_data))], columns=["Число 1", "Число 2", "Результат"])
 
 
-    excel_buffer = io.BytesIO()
-    with pd.ExcelWriter(excel_buffer) as writer:
-        results_df.to_excel(writer, index=True, sheet_name='Sheet1')
-    excel_buffer.seek(0)
-
-    st.download_button(
-        label="Скачать Excel",
-        data=excel_buffer.getvalue(),
-        file_name="Результаты суммы.xlsx",
-        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    )
-
     # Отображение результатов в DataFrame
     st.dataframe(results_df)
 
 if __name__ == "__main__":
     main()
+
 
