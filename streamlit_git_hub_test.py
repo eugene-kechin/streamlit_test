@@ -1,70 +1,47 @@
-
-# %%writefile app.py
-
 import streamlit as st
 import pandas as pd
 import numpy as np
+import io
 
-# Функция для вычисления третьего числа на основе двух введенных чисел
+
 @st.cache_data
 def calculate_third_number(numbers):
-    # Здесь должна быть логика вычисления третьего числа
     return np.array(numbers[:, 0]) + np.array(numbers[:, 1])
 
-# Создание веб-приложения
 st.set_page_config(layout="wide")
 
-# Заголовок приложения
-st.title("Вычисление третьего числа")
-
-# Инициализация DataFrame для хранения результатов
-results_df = pd.DataFrame(columns=["Число 1", "Число 2", "Результат"])
-
-how_data = st.number_input("Сколько данных", min_value=1)
-numbers = []
-for i in range(int(how_data) * 2):
-# Ввод первого числа
-    number = st.number_input(label=f"Введите {i+1} число")
-
-# Ввод второго числа
-    #second_number = st.number_input(label=f"Введите {i+2} число")
-    numbers.append(number)
-
-#button_calculate = st.button('Вычислить третье число')
-#if button_calculate:
-numbers = np.resize(np.array(numbers), (int(how_data), 2))
-
-res_num = calculate_third_number(numbers)
-
-results_df = pd.DataFrame(np.column_stack([numbers, res_num]), index=[f"Наблюдение {i + 1}" for i in range(int(how_data))], columns=["Число 1", "Число 2", "Результат"])
-#results_df = pd.concat([results_df, pd.DataFrame({'First Number': [first_number], 'Second Number': [second_number], 'Third Number': [third_number]})], ignore_index=True)
-
-# Кнопка для вычисления третьего числа
-#button_calculate = st.button('Вычислить третье число')
-
-# Проверка нажатия кнопки
-#if button_calculate:
-    # Вычисление третьего числа
-    #third_number = calculate_third_number(first_number, second_number)
-
-    # Добавление нового ряда в DataFrame
-
-#    results_df = pd.concat([results_df, pd.DataFrame({'First Number': [first_number], 'Second Number': [second_number], 'Third Number': [third_number]})], ignore_index=True)
-
-    #results_df = results_df.append({'First Number': first_number, 'Second Number': second_number, 'Third Number': third_number}, ignore_index=True)
+st.title("Калькулятор для вычисления суммы двух положительных чисел")
 
 
+def main():
 
-# Кнопка для скачивания DataFrame в формате Excel
-button_download = st.button('Скачать результаты в формате Excel')
+    results_df = pd.DataFrame(columns=["Число 1", "Число 2", "Результат"])
 
-# Проверка нажатия кнопки скачивания
-if button_download:
-    #results_df = results_df.reset_index(names='Номер наблюдения')
-    # Скачивание DataFrame в формате Excel
-    results_df.to_excel('results.xlsx')
+    how_data = st.number_input("Сколько данных", min_value=1)
+    numbers = []
+    for i in range(int(how_data) * 2):
+        number = st.number_input(label=f"Введите {i+1} число", value=0.00, step=0.01)
+        numbers.append(number)
+
+    numbers = np.resize(np.array(numbers), (int(how_data), 2))
+    res_num = calculate_third_number(numbers)
+    results_df = pd.DataFrame(np.column_stack([numbers, res_num]), index=[f"Наблюдение {i + 1}" for i in range(int(how_data))], columns=["Число 1", "Число 2", "Результат"])
 
 
-# Отображение результатов в DataFrame
+    excel_buffer = io.BytesIO()
+    with pd.ExcelWriter(excel_buffer) as writer:
+        results_df.to_excel(writer, index=True, sheet_name='Sheet1')
+    excel_buffer.seek(0)
 
-st.dataframe(results_df)
+    st.download_button(
+        label="Скачать Excel",
+        data=excel_buffer.getvalue(),
+        file_name="Результаты суммы.xlsx",
+        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    )
+
+    # Отображение результатов в DataFrame
+    st.dataframe(results_df)
+
+if __name__ == "__main__":
+    main()
